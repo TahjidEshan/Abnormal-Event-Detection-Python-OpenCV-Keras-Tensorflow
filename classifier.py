@@ -4,8 +4,9 @@ import numpy as np
 import ast
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier
-import matplotlib as plt
 import tensorflow as tf
+from keras.models import Sequential
+from keras.layers import Dense
 
 
 def svm(training_features, training_labels, test_features, test_labels):
@@ -35,6 +36,78 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
         correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         print "Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
+
+
+def batch_creator(batch_size, train_x, train_y, seed):
+    """Create batch with random samples and return appropriate format"""
+    start = np.randint(0, seed)
+    end = start + batch_size
+    return train_x[start:end], train_y[start:end]
+
+
+def cnn(training_features, training_labels, test_features, test_labels, learning_rate, training_epochs, n_dim, x, y):
+    input_num_units = n_dim
+    hidden_num_units = 500
+    output_num_units = 1
+    batch_size = 4
+    seed = len(training_features) - batch_size
+    weights = {
+        'hidden': tf.Variable(tf.random_normal([input_num_units, hidden_num_units], seed=seed)),
+        'output': tf.Variable(tf.random_normal([hidden_num_units, output_num_units], seed=seed))
+    }
+    biases = {
+        'hidden': tf.Variable(tf.random_normal([hidden_num_units], seed=seed)),
+        'output': tf.Variable(tf.random_normal([output_num_units], seed=seed))
+    }
+    hidden_layer = tf.add(tf.matmul(x, weights['hidden']), biases['hidden'])
+    hidden_layer = tf.nn.relu(hidden_layer)
+
+    output_layer = tf.matmul(hidden_layer, weights[
+                             'output']) + biases['output']
+    cost = tf.reduce_mean(
+        tf.nn.softmax_cross_entropy_with_logits(output_layer, y))
+    optimizer = tf.train.AdamOptimizer(
+        learning_rate=learning_rate).minimize(cost)
+    init = tf.initialize_all_variables()
+    with tf.Session("/cpu:0") as sess:
+        # create initialized variables
+        sess.run(init)
+        for epoch in range(training_epochs):
+            avg_cost = 0
+            total_batch = int(training_features.shape[0] / batch_size)
+            for i in range(total_batch):
+                batch_x, batch_y = batch_creator(
+                    batch_size, training_features, training_labels, seed)
+                _, c = sess.run([optimizer, cost], feed_dict={
+                                x: batch_x, y: batch_y})
+
+                avg_cost += c / total_batch
+
+            print "Epoch:", (epoch + 1), "cost =", "{:.5f}".format(avg_cost)
+
+        print "\nTraining complete!"
+
+        # find predictions on val set
+        pred_temp = tf.equal(tf.argmax(output_layer, 1), tf.argmax(y, 1))
+        accuracy = tf.reduce_mean(tf.cast(pred_temp, "float"))
+        print "Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
+
+        predict = tf.argmax(output_layer, 1)
+        pred = predict.eval({x: test_features.reshape(-1, input_num_units)})
+
+
+def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim):
+    seed = 8
+    np.random.seed(seed)
+    model = Sequential()
+    model.add(Dense(128, input_dim=n_dim, init='uniform', activation='relu'))
+    model.add(Dense(64, init='uniform', activation='relu'))
+    model.add(Dense(1, init='uniform', activation='sigmoid'))
+    model.compile(loss='binary_crossentropy',
+                  optimizer='adam', metrics=['accuracy'])
+    model.fit(training_data, training_labels, nb_epoch=150, batch_size=10)
+    scores = model.evaluate(test_data, test_labels)
+    print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
 
 
 def reshapeList(features):
@@ -102,9 +175,9 @@ def main():
         test_features_final, test_labels)
     '''
     '''
-    ###Linear Regression Using tensorflow
+    ###Logistics Regression Using tensorflow
     '''
-    print("Initiating Logistics Regression")
+    #print("Initiating Logistics Regression")
     n_dim = training_features_final.shape[1]
     learning_rate = 0.1
     training_epochs = 10
@@ -112,9 +185,18 @@ def main():
     X = tf.placeholder(tf.float32, [None, n_dim])
     Y = tf.placeholder(tf.float32, [None, 1])
     W = tf.Variable(tf.ones([n_dim, 2]))
-
+    '''
     logReg(training_features_final, training_X, test_features_final,
            test_X, learning_rate, training_epochs, X, Y, W)
-
+    '''
+    # Starting CNN
+    '''
+    print("Starting Convolutional Neural Network")
+    cnn(training_features_final, training_X, test_features_final,
+        test_X, learning_rate, training_epochs, n_dim, X, Y)
+    '''
+    print("Initialising Neural Network")
+    neuralNetKeras(training_features_final, training_X,
+                   test_features_final, test_labels, n_dim)
 if __name__ == '__main__':
     main()
