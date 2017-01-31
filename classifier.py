@@ -7,6 +7,12 @@ from sklearn.multiclass import OneVsRestClassifier
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers import Dropout
+from keras.layers import Flatten
+from keras.layers.convolutional import Convolution2D
+from keras.layers.convolutional import MaxPooling2D
+from keras.utils import np_utils
+from keras import backend as K
 
 
 def svm(training_features, training_labels, test_features, test_labels):
@@ -46,8 +52,11 @@ def batch_creator(batch_size, train_x, train_y, seed):
 
 
 def cnn(training_features, training_labels, test_features, test_labels, learning_rate, training_epochs, n_dim, x, y):
-    input_num_units = n_dim
-    hidden_num_units = 500
+    #input_num_units = n_dim
+    #hidden_num_units = 500
+    input_num_units = 12
+    hidden_num_units = 8
+
     output_num_units = 1
     batch_size = 4
     seed = len(training_features) - batch_size
@@ -100,14 +109,39 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     seed = 8
     np.random.seed(seed)
     model = Sequential()
-    model.add(Dense(128, input_dim=n_dim, init='uniform', activation='relu'))
-    model.add(Dense(64, init='uniform', activation='relu'))
+    model.add(Dense(12, input_dim=n_dim, init='uniform', activation='relu'))
+    model.add(Dense(8, init='uniform', activation='relu'))
     model.add(Dense(1, init='uniform', activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
     model.fit(training_data, training_labels, nb_epoch=150, batch_size=10)
     scores = model.evaluate(test_data, test_labels)
     print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+
+
+def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
+    seed = 8
+    np.random.seed(seed)
+    num_classes = 2
+    model = Sequential()
+    model.add(Convolution2D(30, 5, 5, border_mode='valid',
+                            input_shape=(1, n_dim), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Convolution2D(15, 3, 3, activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.2))
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(50, activation='relu'))
+    model.add(Dense(num_classes, activation='softmax'))
+    # Compile model
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='adam', metrics=['accuracy'])
+    model.fit(training_data, training_labels, validation_data=(
+        test_data, test_labels), nb_epoch=10, batch_size=8, verbose=2)
+
+    scores = model.evaluate(X_test, y_test, verbose=0)
+    print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
 
 
 def reshapeList(features):
@@ -195,8 +229,14 @@ def main():
     cnn(training_features_final, training_X, test_features_final,
         test_X, learning_rate, training_epochs, n_dim, X, Y)
     '''
+    '''
     print("Initialising Neural Network")
     neuralNetKeras(training_features_final, training_X,
                    test_features_final, test_labels, n_dim)
+    '''
+    print("Initialising convolutional neural network ")
+    neuralNetKeras(training_features_final, training_X,
+                   test_features_final, test_labels, n_dim)
+
 if __name__ == '__main__':
     main()
