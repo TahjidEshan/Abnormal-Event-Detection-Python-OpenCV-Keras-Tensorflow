@@ -30,6 +30,7 @@
 *.sqlite
 
 # OS generated files #
+
 ######################
 .DS_Store
 .DS_Store?
@@ -38,6 +39,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -61,6 +63,7 @@ parts/
 sdist/
 var/
 wheels/
+
 # Django stuff:
 *.log
 *.egg-info/
