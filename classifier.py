@@ -235,7 +235,7 @@ def main():
                    test_features_final, test_labels, n_dim)
     '''
     print("Initialising convolutional neural network ")
-    neuralNetKeras(training_features_final, training_X,
+    cnnKeras(training_features_final, training_X,
                    test_features_final, test_labels, n_dim)
 
 if __name__ == '__main__':
