@@ -124,15 +124,15 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     np.random.seed(seed)
     num_classes = 2
     model = Sequential()
-    model.add(Convolution2D(30, 5, 5, border_mode='valid',
-                            input_shape=(1, n_dim), activation='relu'))
+    model.add(Convolution2D(30, 1, 6000000, border_mode='valid',
+                            input_shape=(1, n_dim, 1), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Convolution2D(15, 3, 3, activation='relu'))
+    model.add(Convolution2D(15, 1, 6000000, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.2))
     model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
-    model.add(Dense(50, activation='relu'))
+    model.add(Dense(12, activation='relu'))
+    model.add(Dense(8, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     # Compile model
     model.compile(loss='categorical_crossentropy',
@@ -236,7 +236,7 @@ def main():
     '''
     print("Initialising convolutional neural network ")
     cnnKeras(training_features_final, training_X,
-                   test_features_final, test_labels, n_dim)
+             test_features_final, test_labels, n_dim)
 
 if __name__ == '__main__':
     main()
