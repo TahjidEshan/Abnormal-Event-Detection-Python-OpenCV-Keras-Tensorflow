@@ -124,23 +124,24 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     np.random.seed(seed)
     num_classes = 2
     model = Sequential()
-    model.add(Convolution2D(30, 1, 6000000, border_mode='valid',
-                            input_shape=(1, n_dim, 1), activation='relu'))
+    model.add(Convolution2D(30, 1, 1, border_mode='valid',
+                            input_shape=(2, 2000, 1500), activation='relu'))
     model.add(MaxPooling2D(pool_size=(1, 1)))
-    model.add(Convolution2D(15, 1, 6000000, activation='relu'))
-    model.add(MaxPooling2D(pool_size=(1, 1)))
-    model.add(Dropout(0.2))
+    model.add(Convolution2D(15, 1, 1, activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
     model.add(Flatten())
     model.add(Dense(12, activation='relu'))
+    model.add(Dropout(0.5))
     model.add(Dense(8, activation='relu'))
-    model.add(Dense(num_classes, activation='softmax'))
+    model.add(Dense(1, activation='softmax'))
     # Compile model
-    model.compile(loss='categorical_crossentropy',
+    model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
     model.fit(training_data, training_labels, validation_data=(
-        test_data, test_labels), nb_epoch=10, batch_size=8, verbose=2)
+        test_data, test_labels), nb_epoch=10, batch_size=8, verbose=1)
 
-    scores = model.evaluate(X_test, y_test, verbose=0)
+    scores = model.evaluate(test_data, test_labels, verbose=0)
     print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
 
 
@@ -148,12 +149,12 @@ def reshapeList(features):
     x = len(features)
     y = len(features[0][0]) * \
         len(features[0][0][0]) * len(features[0])
-    features = np.reshape(
-        features, (x, y))
+    features = np.reshape(features, (x, y))
     return np.array(features)
 
 
-def readData(featureList, dataList):
+def readData(dataList):
+    featureList = []
     for i in range(0, len(dataList.index)):
         temp = []
         features = ast.literal_eval(dataList.loc[i, 'features'])
@@ -177,7 +178,7 @@ def main():
     test_data = data.tail(int(val_text)).reset_index(drop=True)
     training_data = data.head(len(data.index) - int(val_text))
     #test_data = data.tail(1).reset_index(drop=True)
-    #training_data = data.head(2)
+    #training_data = data.head(1)
 
     # set labels
     # labels for svm
@@ -193,13 +194,17 @@ def main():
     test_features_final = []
 
     print("Reading Data")
-    training_features_final = readData(training_features_final, training_data)
-    test_features_final = readData(test_features_final, test_data)
-
+    training_features_final = readData(training_data)
+    test_features_final = readData(test_data)
     print("Reshaping Data")
+    train_cnn = np.reshape(training_features_final, (len(training_features_final), len(training_features_final[
+        0]), len(training_features_final[0][0]), len(training_features_final[0][0][0])))
+    test_cnn = np.reshape(test_features_final, (len(test_features_final), len(test_features_final[
+        0]), len(test_features_final[0][0]), len(test_features_final[0][0][0])))
     training_features_final = reshapeList(training_features_final)
     test_features_final = reshapeList(test_features_final)
 
+    # print(training_features_final.shape)
     '''
     ###SVM classifier using sklearn
     '''
@@ -235,8 +240,8 @@ def main():
                    test_features_final, test_labels, n_dim)
     '''
     print("Initialising convolutional neural network ")
-    cnnKeras(training_features_final, training_X,
-             test_features_final, test_labels, n_dim)
+    cnnKeras(train_cnn, training_X,
+             test_cnn, test_labels, n_dim)
 
 if __name__ == '__main__':
     main()
