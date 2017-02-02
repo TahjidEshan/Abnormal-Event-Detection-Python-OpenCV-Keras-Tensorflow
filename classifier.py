@@ -124,16 +124,16 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     np.random.seed(seed)
     num_classes = 2
     model = Sequential()
-    model.add(Convolution2D(30, 1, 1, border_mode='valid',
+    model.add(Convolution2D(32, 3, 3, border_mode='valid',
                             input_shape=(2, 2000, 1500), activation='relu'))
     model.add(MaxPooling2D(pool_size=(1, 1)))
-    model.add(Convolution2D(15, 1, 1, activation='relu'))
+    model.add(Convolution2D(15, 3, 3, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     model.add(Flatten())
-    model.add(Dense(12, activation='relu'))
+    model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(8, activation='relu'))
+    model.add(Dense(64, activation='relu'))
     model.add(Dense(1, activation='softmax'))
     # Compile model
     model.compile(loss='sparse_categorical_crossentropy',
