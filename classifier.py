@@ -124,10 +124,10 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     np.random.seed(seed)
     num_classes = 2
     model = Sequential()
-    model.add(Convolution2D(32, 3, 3, border_mode='valid',
+    model.add(Convolution2D(32, 2, 500, border_mode='valid',
                             input_shape=(2, 2000, 1500), activation='relu'))
     model.add(MaxPooling2D(pool_size=(1, 1)))
-    model.add(Convolution2D(15, 3, 3, activation='relu'))
+    model.add(Convolution2D(15, 2, 500, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     model.add(Flatten())
