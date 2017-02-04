@@ -78,9 +78,9 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
     model.fit(training_data, training_labels, validation_data=(
-        test_data, test_labels), nb_epoch=10, batch_size=8, verbose=1)
+        test_data, test_labels), nb_epoch=15, batch_size=8, verbose=2)
 
-    scores = model.evaluate(test_data, test_labels, verbose=0)
+    scores = model.evaluate(test_data, test_labels, verbose=1)
     print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
 
 
@@ -111,13 +111,13 @@ def main():
     data = data.sample(frac=1).reset_index(drop=True)
 
     # Calculate length of 30% data for testing
-    val_text = len(data.index) * (10.0 / 100.0)
+    val_text = len(data.index) * (30.0 / 100.0)
 
     # divide training and test data
-    #test_data = data.tail(int(val_text)).reset_index(drop=True)
-    #raining_data = data.head(len(data.index) - int(val_text))
-    test_data = data.tail(1).reset_index(drop=True)
-    training_data = data.head(1)
+    test_data = data.tail(int(val_text)).reset_index(drop=True)
+    training_data = data.head(len(data.index) - int(val_text))
+    #test_data = data.tail(1).reset_index(drop=True)
+    #training_data = data.head(1)
 
     # set labels
     # labels for svm
@@ -162,7 +162,7 @@ def main():
 
     X = tf.placeholder(tf.float32, [None, n_dim])
     Y = tf.placeholder(tf.float32, [None, 1])
-    W = tf.Variable(tf.ones([n_dim, 2]))
+    #W = tf.Variable(tf.ones([n_dim, 2]))
     '''
     logReg(training_features_final, training_X, test_features_final,
            test_X, learning_rate, training_epochs, X, Y, W)
