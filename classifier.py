@@ -44,67 +44,6 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
         print "Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
 
 
-def batch_creator(batch_size, train_x, train_y, seed):
-    """Create batch with random samples and return appropriate format"""
-    start = np.randint(0, seed)
-    end = start + batch_size
-    return train_x[start:end], train_y[start:end]
-
-
-def cnn(training_features, training_labels, test_features, test_labels, learning_rate, training_epochs, n_dim, x, y):
-    #input_num_units = n_dim
-    #hidden_num_units = 500
-    input_num_units = 12
-    hidden_num_units = 8
-
-    output_num_units = 1
-    batch_size = 4
-    seed = len(training_features) - batch_size
-    weights = {
-        'hidden': tf.Variable(tf.random_normal([input_num_units, hidden_num_units], seed=seed)),
-        'output': tf.Variable(tf.random_normal([hidden_num_units, output_num_units], seed=seed))
-    }
-    biases = {
-        'hidden': tf.Variable(tf.random_normal([hidden_num_units], seed=seed)),
-        'output': tf.Variable(tf.random_normal([output_num_units], seed=seed))
-    }
-    hidden_layer = tf.add(tf.matmul(x, weights['hidden']), biases['hidden'])
-    hidden_layer = tf.nn.relu(hidden_layer)
-
-    output_layer = tf.matmul(hidden_layer, weights[
-                             'output']) + biases['output']
-    cost = tf.reduce_mean(
-        tf.nn.softmax_cross_entropy_with_logits(output_layer, y))
-    optimizer = tf.train.AdamOptimizer(
-        learning_rate=learning_rate).minimize(cost)
-    init = tf.initialize_all_variables()
-    with tf.Session("/cpu:0") as sess:
-        # create initialized variables
-        sess.run(init)
-        for epoch in range(training_epochs):
-            avg_cost = 0
-            total_batch = int(training_features.shape[0] / batch_size)
-            for i in range(total_batch):
-                batch_x, batch_y = batch_creator(
-                    batch_size, training_features, training_labels, seed)
-                _, c = sess.run([optimizer, cost], feed_dict={
-                                x: batch_x, y: batch_y})
-
-                avg_cost += c / total_batch
-
-            print "Epoch:", (epoch + 1), "cost =", "{:.5f}".format(avg_cost)
-
-        print "\nTraining complete!"
-
-        # find predictions on val set
-        pred_temp = tf.equal(tf.argmax(output_layer, 1), tf.argmax(y, 1))
-        accuracy = tf.reduce_mean(tf.cast(pred_temp, "float"))
-        print "Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
-
-        predict = tf.argmax(output_layer, 1)
-        pred = predict.eval({x: test_features.reshape(-1, input_num_units)})
-
-
 def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim):
     seed = 8
     np.random.seed(seed)
@@ -124,10 +63,10 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     np.random.seed(seed)
     num_classes = 2
     model = Sequential()
-    model.add(Convolution2D(32, 1, 1, border_mode='valid',
+    model.add(Convolution2D(32, 1, 1, init='glorot_uniform', border_mode='valid',
                             input_shape=(2, 2000, 1500), activation='relu'))
     model.add(MaxPooling2D(pool_size=(1, 1)))
-    model.add(Convolution2D(15, 1, 1, activation='relu'))
+    model.add(Convolution2D(15, 1, 1, init='glorot_uniform', activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     model.add(Flatten())
@@ -172,13 +111,13 @@ def main():
     data = data.sample(frac=1).reset_index(drop=True)
 
     # Calculate length of 30% data for testing
-    val_text = len(data.index) * (30.0 / 100.0)
+    val_text = len(data.index) * (10.0 / 100.0)
 
     # divide training and test data
-    test_data = data.tail(int(val_text)).reset_index(drop=True)
-    training_data = data.head(len(data.index) - int(val_text))
-    #test_data = data.tail(1).reset_index(drop=True)
-    #training_data = data.head(1)
+    #test_data = data.tail(int(val_text)).reset_index(drop=True)
+    #raining_data = data.head(len(data.index) - int(val_text))
+    test_data = data.tail(1).reset_index(drop=True)
+    training_data = data.head(1)
 
     # set labels
     # labels for svm
@@ -241,7 +180,7 @@ def main():
     '''
     print("Initialising convolutional neural network ")
     cnnKeras(train_cnn, training_X,
-             test_cnn, test_labels, n_dim)
+             test_cnn, test_X, n_dim)
 
 if __name__ == '__main__':
     main()
