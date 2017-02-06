@@ -13,11 +13,18 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.convolutional import MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
+from sklearn.naive_bayes import GaussianNB
 
 
 def svm(training_features, training_labels, test_features, test_labels):
     model = OneVsRestClassifier(estimator=SVC(
         kernel='poly', degree=2, random_state=0))
+    model.fit(training_features, training_labels)
+    print "Accuracy:", (model.score(test_features, test_labels))
+
+
+def naiveBayes(training_features, training_labels, test_features, test_labels):
+    model = GaussianNB()
     model.fit(training_features, training_labels)
     print "Accuracy:", (model.score(test_features, test_labels))
 
@@ -178,9 +185,13 @@ def main():
     neuralNetKeras(training_features_final, training_X,
                    test_features_final, test_labels, n_dim)
     '''
+    '''
     print("Initialising convolutional neural network ")
     cnnKeras(train_cnn, training_X,
              test_cnn, test_X, n_dim)
-
+    '''
+    print("Initialising Naive Bayes")
+    naiveBayes(training_features_final, training_labels,
+               test_features_final, test_labels)
 if __name__ == '__main__':
     main()
