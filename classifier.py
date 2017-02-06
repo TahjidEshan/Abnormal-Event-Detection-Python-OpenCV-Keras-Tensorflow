@@ -20,13 +20,15 @@ def svm(training_features, training_labels, test_features, test_labels):
     model = OneVsRestClassifier(estimator=SVC(
         kernel='poly', degree=2, random_state=0))
     model.fit(training_features, training_labels)
-    print "Accuracy:", (model.score(test_features, test_labels))
+    print "SVM Accuracy:", (model.score(test_features, test_labels))
+    return
 
 
 def naiveBayes(training_features, training_labels, test_features, test_labels):
     model = GaussianNB()
     model.fit(training_features, training_labels)
-    print "Accuracy:", (model.score(test_features, test_labels))
+    print "Naive Bayes Accuracy:", (model.score(test_features, test_labels))
+    return
 
 
 def logReg(training_features, training_labels, test_features, test_labels, learning_rate, training_epochs, X, Y, W):
@@ -48,7 +50,8 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
         y_pred = sess.run(y_, feed_dict={X: test_features})
         correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        print "Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
+        print "Logistics Regression Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
+        return
 
 
 def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim):
@@ -63,6 +66,7 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     model.fit(training_data, training_labels, nb_epoch=150, batch_size=10)
     scores = model.evaluate(test_data, test_labels)
     print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
+    return
 
 
 def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
@@ -89,6 +93,7 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
 
     scores = model.evaluate(test_data, test_labels, verbose=1)
     print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
+    return
 
 
 def reshapeList(features):
@@ -193,5 +198,6 @@ def main():
     print("Initialising Naive Bayes")
     naiveBayes(training_features_final, training_labels,
                test_features_final, test_labels)
+
 if __name__ == '__main__':
     main()
