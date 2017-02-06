@@ -14,6 +14,7 @@ from keras.layers.convolutional import MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
 from sklearn.naive_bayes import GaussianNB
+import sys
 
 
 def svm(training_features, training_labels, test_features, test_labels):
@@ -198,6 +199,6 @@ def main():
     print("Initialising Naive Bayes")
     naiveBayes(training_features_final, training_labels,
                test_features_final, test_labels)
-
+    sys.exit()
 if __name__ == '__main__':
     main()
