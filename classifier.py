@@ -74,8 +74,8 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     seed = 8
     np.random.seed(seed)
     model = Sequential()
-    model.add(Dense(12, input_dim=n_dim, init='uniform', activation='relu'))
-    model.add(Dense(8, init='uniform', activation='relu'))
+    model.add(Dense(128, input_dim=n_dim, init='uniform', activation='relu'))
+    model.add(Dense(64, init='uniform', activation='relu'))
     model.add(Dense(1, init='uniform', activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
