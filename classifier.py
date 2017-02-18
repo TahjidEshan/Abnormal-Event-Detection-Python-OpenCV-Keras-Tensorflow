@@ -79,7 +79,7 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     model.add(Dense(1, init='uniform', activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
-    model.fit(training_data, training_labels, nb_epoch=150, batch_size=10)
+    model.fit(training_data, training_labels, nb_epoch=15, batch_size=10)
     scores = model.evaluate(test_data, test_labels)
     print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
     filename = 'trained_Neural_Net.sav'
@@ -180,6 +180,8 @@ def main():
     test_cnn = reshapeData(test_features_final)
     training_features_final = reshapeList(training_features_final)
     test_features_final = reshapeList(test_features_final)
+    n_dim = training_features_final.shape[1]
+
     while(True):
         print('Please choose any one of the options:')
         print('Press 1 for Support Vector Machine')
@@ -191,7 +193,7 @@ def main():
         choice = int(raw_input())
         if choice == 6:
             break
-        elif choice == 1 :
+        elif choice == 1:
             '''
             ###SVM classifier using sklearn
             '''
@@ -201,9 +203,8 @@ def main():
             '''
             ###Logistics Regression Using tensorflow
             '''
-        elif choice == 2 :
+        elif choice == 2:
             #print("Initiating Logistics Regression")
-            n_dim = training_features_final.shape[1]
             learning_rate = 0.1
             training_epochs = 10
 
@@ -214,12 +215,12 @@ def main():
             logReg(training_features_final, training_X, test_features_final,
                    test_X, learning_rate, training_epochs, X, Y, W)
 
-        elif choice == 4 :
+        elif choice == 4:
             #print("Initialising Neural Network")
             neuralNetKeras(training_features_final, training_X,
                            test_features_final, test_labels, n_dim)
 
-        elif choice == 5 :
+        elif choice == 5:
             #print("Initialising convolutional neural network ")
             cnnKeras(train_cnn, training_X,
                      test_cnn, test_X, n_dim)
@@ -229,7 +230,7 @@ def main():
             naiveBayes(training_features_final, training_labels,
                        test_features_final, test_labels)
         else:
-            print ('Wrong Choice, Please Choose Again')
+            print('Wrong Choice, Please Choose Again')
 
     sys.exit()
 if __name__ == '__main__':
