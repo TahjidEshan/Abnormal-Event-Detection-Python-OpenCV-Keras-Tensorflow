@@ -15,24 +15,34 @@ from keras.utils import np_utils
 from keras import backend as K
 from sklearn.naive_bayes import GaussianNB
 import sys
+import pickle
 
 
 def svm(training_features, training_labels, test_features, test_labels):
+    print("Initiating SVM")
     model = OneVsRestClassifier(estimator=SVC(
         kernel='poly', degree=2, random_state=0))
     model.fit(training_features, training_labels)
     print "SVM Accuracy:", (model.score(test_features, test_labels))
-    return
+    filename = 'trained_SVM.sav'
+    print('Saving Model')
+    pickle.dump(model, open(filename, 'wb'))
+    return None
 
 
 def naiveBayes(training_features, training_labels, test_features, test_labels):
+    print("Initiating Naive Bayes")
     model = GaussianNB()
     model.fit(training_features, training_labels)
     print "Naive Bayes Accuracy:", (model.score(test_features, test_labels))
-    return
+    filename = 'trained_Naive_Bayes.sav'
+    print('Saving Model')
+    pickle.dump(model, open(filename, 'wb'))
+    return None
 
 
 def logReg(training_features, training_labels, test_features, test_labels, learning_rate, training_epochs, X, Y, W):
+    print("Initiating Logistics Regression")
     init = tf.initialize_all_variables()
     y_ = tf.nn.sigmoid(tf.matmul(X, W))
     cost_function = tf.reduce_mean(tf.reduce_sum((-Y * tf.log(y_)) - ((1 - Y) * tf.log(1 - y_)),
@@ -52,10 +62,15 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
         correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         print "Logistics Regression Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
-        return
+        saver = tf.train.Saver()
+        print('Saving Model')
+        saver.save(sess, 'logistics_regression')
+        saver.export_meta_graph('logistics_regression.meta')
+        return None
 
 
 def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim):
+    print("Initiating Neural Network")
     seed = 8
     np.random.seed(seed)
     model = Sequential()
@@ -67,10 +82,14 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     model.fit(training_data, training_labels, nb_epoch=150, batch_size=10)
     scores = model.evaluate(test_data, test_labels)
     print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
-    return
+    filename = 'trained_Neural_Net.sav'
+    print('Saving Model')
+    pickle.dump(model, open(filename, 'wb'))
+    return None
 
 
 def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
+    print("Initiating CNN")
     seed = 8
     np.random.seed(seed)
     num_classes = 2
@@ -94,7 +113,10 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
 
     scores = model.evaluate(test_data, test_labels, verbose=1)
     print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
-    return
+    print('Saving Model')
+    filename = 'trained_CNN.sav'
+    pickle.dump(model, open(filename, 'wb'))
+    return None
 
 
 def reshapeList(features):
@@ -103,6 +125,10 @@ def reshapeList(features):
         len(features[0][0][0]) * len(features[0])
     features = np.reshape(features, (x, y))
     return np.array(features)
+
+
+def reshapeData(features):
+    return np.reshape(features, (len(features), len(features[0]), len(features[0][0]), len(features[0][0][0])))
 
 
 def readData(dataList):
@@ -148,57 +174,63 @@ def main():
     print("Reading Data")
     training_features_final = readData(training_data)
     test_features_final = readData(test_data)
+
     print("Reshaping Data")
-    train_cnn = np.reshape(training_features_final, (len(training_features_final), len(training_features_final[
-        0]), len(training_features_final[0][0]), len(training_features_final[0][0][0])))
-    test_cnn = np.reshape(test_features_final, (len(test_features_final), len(test_features_final[
-        0]), len(test_features_final[0][0]), len(test_features_final[0][0][0])))
+    train_cnn = reshapeData(training_features_final)
+    test_cnn = reshapeData(test_features_final)
     training_features_final = reshapeList(training_features_final)
     test_features_final = reshapeList(test_features_final)
+    while(True):
+        print('Please choose any one of the options:')
+        print('Press 1 for Support Vector Machine')
+        print('Press 2 for Logistics Regression')
+        print('Press 3 for Naive Bayes Classifier')
+        print('Press 4 for Neural Network')
+        print('Press 5 for Convolutional Neural Network')
+        print('Press 6 to Exit')
+        choice = int(raw_input())
+        if choice == 6:
+            break
+        elif choice == 1 :
+            '''
+            ###SVM classifier using sklearn
+            '''
+            svm(training_features_final, training_labels,
+                test_features_final, test_labels)
 
-    # print(training_features_final.shape)
-    '''
-    ###SVM classifier using sklearn
-    '''
-    '''
-    print("Initiating SVM")
-    svm(training_features_final, training_labels,
-        test_features_final, test_labels)
-    '''
-    '''
-    ###Logistics Regression Using tensorflow
-    '''
-    #print("Initiating Logistics Regression")
-    n_dim = training_features_final.shape[1]
-    learning_rate = 0.1
-    training_epochs = 10
+            '''
+            ###Logistics Regression Using tensorflow
+            '''
+        elif choice == 2 :
+            #print("Initiating Logistics Regression")
+            n_dim = training_features_final.shape[1]
+            learning_rate = 0.1
+            training_epochs = 10
 
-    X = tf.placeholder(tf.float32, [None, n_dim])
-    Y = tf.placeholder(tf.float32, [None, 1])
-    #W = tf.Variable(tf.ones([n_dim, 2]))
-    '''
-    logReg(training_features_final, training_X, test_features_final,
-           test_X, learning_rate, training_epochs, X, Y, W)
-    '''
-    # Starting CNN
-    '''
-    print("Starting Convolutional Neural Network")
-    cnn(training_features_final, training_X, test_features_final,
-        test_X, learning_rate, training_epochs, n_dim, X, Y)
-    '''
-    '''
-    print("Initialising Neural Network")
-    neuralNetKeras(training_features_final, training_X,
-                   test_features_final, test_labels, n_dim)
-    '''
-    '''
-    print("Initialising convolutional neural network ")
-    cnnKeras(train_cnn, training_X,
-             test_cnn, test_X, n_dim)
-    '''
-    print("Initialising Naive Bayes")
-    naiveBayes(training_features_final, training_labels,
-               test_features_final, test_labels)
+            X = tf.placeholder(tf.float32, [None, n_dim])
+            Y = tf.placeholder(tf.float32, [None, 1])
+            W = tf.Variable(tf.ones([n_dim, 2]))
+
+            logReg(training_features_final, training_X, test_features_final,
+                   test_X, learning_rate, training_epochs, X, Y, W)
+
+        elif choice == 4 :
+            #print("Initialising Neural Network")
+            neuralNetKeras(training_features_final, training_X,
+                           test_features_final, test_labels, n_dim)
+
+        elif choice == 5 :
+            #print("Initialising convolutional neural network ")
+            cnnKeras(train_cnn, training_X,
+                     test_cnn, test_X, n_dim)
+
+        elif choice == 3:
+            #print("Initialising Naive Bayes")
+            naiveBayes(training_features_final, training_labels,
+                       test_features_final, test_labels)
+        else:
+            print ('Wrong Choice, Please Choose Again')
+
     sys.exit()
 if __name__ == '__main__':
     main()
