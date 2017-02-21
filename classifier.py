@@ -183,6 +183,7 @@ def main():
     n_dim = training_features_final.shape[1]
 
     while(True):
+
         print('Please choose any one of the options:')
         print('Press 1 for Support Vector Machine')
         print('Press 2 for Logistics Regression')
@@ -190,7 +191,9 @@ def main():
         print('Press 4 for Neural Network')
         print('Press 5 for Convolutional Neural Network')
         print('Press 6 to Exit')
+
         choice = int(raw_input())
+
         if choice == 6:
             break
         elif choice == 1:
@@ -233,5 +236,6 @@ def main():
             print('Wrong Choice, Please Choose Again')
 
     sys.exit()
+
 if __name__ == '__main__':
     main()
