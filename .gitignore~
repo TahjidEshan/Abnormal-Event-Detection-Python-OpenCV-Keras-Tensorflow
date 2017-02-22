@@ -134,4 +134,4 @@ ENV/
 .ropeproject
 
 #saved models
-.sav
+*.sav

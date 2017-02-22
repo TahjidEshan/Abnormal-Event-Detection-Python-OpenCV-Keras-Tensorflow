@@ -16,7 +16,7 @@ class backSub:
     def run(self):
         frame_no = 0
         for file in os.listdir(self.location):
-            if frame_no <= 20:
+            if frame_no <= 200:
                 # colored image denoising
                 print('Background subsraction for input frame ' + str(frame_no))
                 frame = cv2.imread(os.path.join(self.location, file))

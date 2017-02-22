@@ -87,7 +87,7 @@ class MotionHeatmap:
                 print 'Processing input frame {index} of {total}'.format(index=index + 1, total=len(self.images))
             frame = cv2.imread(file_name, cv2.IMREAD_COLOR)
             if self.use_average_image_overlay:
-                self.average_image += frame
+                self.average_image = self.average_image + frame
             for row, col in itertools.product(range(self.num_vertical_divisions), range(self.num_horizontal_divisions)):
                 pixel_row, pixel_col = self.pixel_locations[(row, col)]
                 self.block_intensities[(row, col)].append(

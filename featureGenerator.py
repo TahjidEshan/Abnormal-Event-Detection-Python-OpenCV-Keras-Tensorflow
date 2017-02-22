@@ -128,7 +128,7 @@ class App:
         '''
         Remove te condition for 10 or 20 frames, it's only only for testing purposed
         '''
-        while True and frame_count < 20:
+        while True:
             ret, frame = self.cam.read()
             '''print('One Loop')
             print(frame_count)
@@ -298,7 +298,7 @@ class App:
                     tuple((frame_vectors, features, self.label)))
                 cv2.imshow('Frames', vis)
                 frame_count += 1
-                #print('Tracking frame ' + str(frame_count))
+                print('Tracking frame ' + str(frame_count))
             else:
                 self.cam.set(1, pos_frame - 1)
                 cv2.waitKey(1000)
@@ -360,9 +360,9 @@ def main():
         message = template.format(type(ex).__name__, ex.args)
         print(message)
     baseName = extract_basename(video_src)
-    path_to_backsub = '/home/eshan/Thesis/BackSub/' + baseName
-    path_to_heatmap = '/home/eshan/Thesis/Heatmap/' + baseName
-    path_to_frames = '/home/eshan/Thesis/Frames/' + baseName
+    path_to_backsub = '/home/tahjidashfaquemostafa/Thesis/BackSub/' + baseName
+    path_to_heatmap = '/home/tahjidashfaquemostafa/Thesis/Heatmap/' + baseName
+    path_to_frames = '/home/tahjidashfaquemostafa/Thesis/Frames/' + baseName
     print(__doc__)
     '''
     Uncomment for extracting frames from video
