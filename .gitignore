@@ -136,4 +136,5 @@ ENV/
 #saved models
 *.sav
 *.h5
-
+#pics
+*.png
