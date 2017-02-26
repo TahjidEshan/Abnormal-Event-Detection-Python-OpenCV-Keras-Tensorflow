@@ -191,22 +191,27 @@ def main():
         print('Press 4 for Neural Network')
         print('Press 5 for Convolutional Neural Network')
         print('Press 6 to Exit')
+        print('Press 7 for all')
 
         choice = int(raw_input())
+        bool = False
 
         if choice == 6:
             break
-        elif choice == 1:
+
+        if choice == 1 or choice == 7:
             '''
             ###SVM classifier using sklearn
             '''
+            bool = True
             svm(training_features_final, training_labels,
                 test_features_final, test_labels)
 
             '''
             ###Logistics Regression Using tensorflow
             '''
-        elif choice == 2:
+        if choice == 2 or choice == 7:
+            bool = True
             #print("Initiating Logistics Regression")
             learning_rate = 0.1
             training_epochs = 10
@@ -218,24 +223,31 @@ def main():
             logReg(training_features_final, training_X, test_features_final,
                    test_X, learning_rate, training_epochs, X, Y, W)
 
-        elif choice == 4:
+        if choice == 4 or choice == 7:
+            bool = True
             #print("Initialising Neural Network")
             neuralNetKeras(training_features_final, training_X,
                            test_features_final, test_labels, n_dim)
 
-        elif choice == 5:
+        if choice == 5 or choice == 7:
+            bool = True
             #print("Initialising convolutional neural network ")
             cnnKeras(train_cnn, training_X,
                      test_cnn, test_X, n_dim)
 
-        elif choice == 3:
+        if choice == 3 or choice == 7:
+            bool = True
             #print("Initialising Naive Bayes")
             naiveBayes(training_features_final, training_labels,
                        test_features_final, test_labels)
-        else:
+
+        if bool == False:
             print('Wrong Choice, Please Choose Again')
+
+        if choice == 7:
+            break
 
     sys.exit()
 
 if __name__ == '__main__':
-    main()
+main()

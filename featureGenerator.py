@@ -367,11 +367,11 @@ def main():
     '''
     Uncomment for extracting frames from video
     '''
-    videoToFrames(video_src, path_to_frames)
+    #videoToFrames(video_src, path_to_frames)
     '''
         Code for creating mask by background substraction and and motion heatmap
     '''
-    maskGenerator.main(path_to_frames, path_to_backsub, path_to_heatmap)
+    #maskGenerator.main(path_to_frames, path_to_backsub, path_to_heatmap)
     try:
         first_file = next(os.path.join(path_to_heatmap, f) for f in os.listdir(
             path_to_heatmap) if os.path.isfile(os.path.join(path_to_heatmap, f)))
