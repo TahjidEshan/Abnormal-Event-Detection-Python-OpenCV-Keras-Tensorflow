@@ -128,12 +128,13 @@ class App:
         '''
         Remove te condition for 10 or 20 frames, it's only only for testing purposed
         '''
-        while True:
+        print("Total Frames " + str(self.cam.get(7)))
+        while True and frame_count < int(self.cam.get(7)):
             ret, frame = self.cam.read()
             '''print('One Loop')
             print(frame_count)
             print(files[frame_count])'''
-            if frame_count == fileCount:
+            if frame_count == fileCount and (fileCount + 5) <= int(self.cam.get(7)):
                 del features[:]
                 timePassed += 1
                 img_set = []

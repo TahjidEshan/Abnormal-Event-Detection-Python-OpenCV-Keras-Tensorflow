@@ -10,4 +10,4 @@ python featureGenerator.py /home/tahjidashfaquemostafa/Thesis/Data/Normal\ Crowd
 echo "Done with 4" > 'Track.txt'
 echo '7' | python classifier.py
 echo "Done with 5" > 'Track.txt'
-python plot.py
+#python plot.py
