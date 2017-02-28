@@ -129,7 +129,8 @@ class App:
         Remove te condition for 10 or 20 frames, it's only only for testing purposed
         '''
         print("Total Frames " + str(self.cam.get(7)))
-        while True and frame_count < int(self.cam.get(7)):
+        # while True and frame_count < int(self.cam.get(7)):
+        while True and frame_count <= 30:
             ret, frame = self.cam.read()
             '''print('One Loop')
             print(frame_count)

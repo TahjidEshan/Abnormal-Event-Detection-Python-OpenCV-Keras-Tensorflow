@@ -24,9 +24,9 @@ def svm(training_features, training_labels, test_features, test_labels):
         kernel='poly', degree=2, random_state=0))
     model.fit(training_features, training_labels)
     print "SVM Accuracy:", (model.score(test_features, test_labels))
-    filename = 'trained_SVM.sav'
-    print('Saving Model')
-    pickle.dump(model, open(filename, 'wb'))
+    #filename = 'trained_SVM.sav'
+    #print('Saving Model')
+    #pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -35,9 +35,9 @@ def naiveBayes(training_features, training_labels, test_features, test_labels):
     model = GaussianNB()
     model.fit(training_features, training_labels)
     print "Naive Bayes Accuracy:", (model.score(test_features, test_labels))
-    filename = 'trained_Naive_Bayes.sav'
-    print('Saving Model')
-    pickle.dump(model, open(filename, 'wb'))
+    #filename = 'trained_Naive_Bayes.sav'
+    #print('Saving Model')
+    #pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -62,10 +62,10 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
         correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         print "Logistics Regression Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
-        saver = tf.train.Saver()
-        print('Saving Model')
-        saver.save(sess, 'logistics_regression')
-        saver.export_meta_graph('logistics_regression.meta')
+        #saver = tf.train.Saver()
+        #print('Saving Model')
+        #saver.save(sess, 'logistics_regression')
+        # saver.export_meta_graph('logistics_regression.meta')
         return None
 
 
@@ -79,12 +79,12 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     model.add(Dense(1, init='uniform', activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
-    model.fit(training_data, training_labels, nb_epoch=15, batch_size=10)
+    model.fit(training_data, training_labels, nb_epoch=30, batch_size=10)
     scores = model.evaluate(test_data, test_labels)
     print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
-    filename = 'trained_Neural_Net.sav'
-    print('Saving Model')
-    pickle.dump(model, open(filename, 'wb'))
+    #filename = 'trained_Neural_Net.sav'
+    #print('Saving Model')
+    #pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -109,13 +109,13 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam', metrics=['accuracy'])
     model.fit(training_data, training_labels, validation_data=(
-        test_data, test_labels), nb_epoch=15, batch_size=8, verbose=2)
+        test_data, test_labels), nb_epoch=30, batch_size=8, verbose=2)
 
     scores = model.evaluate(test_data, test_labels, verbose=1)
-    print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
-    print('Saving Model')
-    filename = 'trained_CNN.sav'
-    pickle.dump(model, open(filename, 'wb'))
+    #print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
+    #print('Saving Model')
+    #filename = 'trained_CNN.sav'
+    #pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -145,7 +145,7 @@ def readData(dataList):
 
 def main():
 
-    data = pd.read_csv('data.csv')
+    data = pd.read_csv('data.csv', header=None)
     # shuffle the data
     data = data.sample(frac=1).reset_index(drop=True)
 
