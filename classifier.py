@@ -24,9 +24,9 @@ def svm(training_features, training_labels, test_features, test_labels):
         kernel='poly', degree=2, random_state=0))
     model.fit(training_features, training_labels)
     print "SVM Accuracy:", (model.score(test_features, test_labels))
-    #filename = 'trained_SVM.sav'
-    #print('Saving Model')
-    #pickle.dump(model, open(filename, 'wb'))
+    filename = 'trained_SVM.sav'
+    print('Saving Model')
+    pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -35,9 +35,9 @@ def naiveBayes(training_features, training_labels, test_features, test_labels):
     model = GaussianNB()
     model.fit(training_features, training_labels)
     print "Naive Bayes Accuracy:", (model.score(test_features, test_labels))
-    #filename = 'trained_Naive_Bayes.sav'
-    #print('Saving Model')
-    #pickle.dump(model, open(filename, 'wb'))
+    filename = 'trained_Naive_Bayes.sav'
+    print('Saving Model')
+    pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -45,8 +45,8 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
     print("Initiating Logistics Regression")
     init = tf.initialize_all_variables()
     y_ = tf.nn.sigmoid(tf.matmul(X, W))
-    cost_function = tf.reduce_mean(tf.reduce_sum((-Y * tf.log(y_)) - ((1 - Y) * tf.log(1 - y_)),
-                                                 reduction_indices=[1]))
+    cost_function = tf.reduce_mean(tf.reduce_sum(
+        (-Y * tf.log(y_)) - ((1 - Y) * tf.log(1 - y_)), reduction_indices=[1]))
     optimizer = tf.train.GradientDescentOptimizer(
         learning_rate).minimize(cost_function)
     cost_history = np.empty(shape=[1], dtype=float)
@@ -55,18 +55,17 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
         for epoch in range(training_epochs):
             sess.run(optimizer, feed_dict={
                      X: training_features, Y: training_labels})
-            cost_history = np.append(cost_history, sess.run(cost_function,
-                                                            feed_dict={X: training_features, Y: training_labels}))
-
+            cost_history = np.append(cost_history, sess.run(
+                cost_function, feed_dict={X: training_features, Y: training_labels}))
         y_pred = sess.run(y_, feed_dict={X: test_features})
         correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         print "Logistics Regression Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
-        #saver = tf.train.Saver()
-        #print('Saving Model')
-        #saver.save(sess, 'logistics_regression')
-        # saver.export_meta_graph('logistics_regression.meta')
-        return None
+        saver = tf.train.Saver()
+        print('Saving Model')
+        saver.save(sess, 'logistics_regression')
+        saver.export_meta_graph('logistics_regression.meta')
+    return None
 
 
 def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim):
@@ -83,7 +82,8 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     scores = model.evaluate(test_data, test_labels)
     print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
     #filename = 'trained_Neural_Net.sav'
-    #print('Saving Model')
+    print('Saving Model')
+    model.save('trained_neural_net.h5')
     #pickle.dump(model, open(filename, 'wb'))
     return None
 
@@ -112,8 +112,9 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
         test_data, test_labels), nb_epoch=30, batch_size=8, verbose=2)
 
     scores = model.evaluate(test_data, test_labels, verbose=1)
-    #print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
-    #print('Saving Model')
+    print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
+    print('Saving Model')
+    model.save('trained_CNN.h5')
     #filename = 'trained_CNN.sav'
     #pickle.dump(model, open(filename, 'wb'))
     return None
@@ -145,8 +146,13 @@ def readData(dataList):
 
 def main():
 
-    data = pd.read_csv('data.csv', header=None)
+    data0 = pd.read_csv('data.csv')
+    data1 = pd.read_csv('data1.csv', header=None)
+    frames = [data0, data1]
+    data = pd.concat(frames)
     # shuffle the data
+    # print(list(data.columns))
+    #print('Shuffling Data')
     data = data.sample(frac=1).reset_index(drop=True)
 
     # Calculate length of 30% data for testing
@@ -160,6 +166,7 @@ def main():
 
     # set labels
     # labels for svm
+    # print(list(training_data.columns))
     training_labels = training_data['labels'].values
     test_labels = test_data['labels'].values
     # labels for tf classifiers
