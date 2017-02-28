@@ -362,18 +362,18 @@ def main():
         message = template.format(type(ex).__name__, ex.args)
         print(message)
     baseName = extract_basename(video_src)
-    path_to_backsub = '/home/tahjidashfaquemostafa/Thesis/BackSub/' + baseName
-    path_to_heatmap = '/home/tahjidashfaquemostafa/Thesis/Heatmap/' + baseName
-    path_to_frames = '/home/tahjidashfaquemostafa/Thesis/Frames/' + baseName
+    path_to_backsub = '/home/eshan/Thesis/BackSub/' + baseName
+    path_to_heatmap = '/home/eshan/Thesis/Heatmap/' + baseName
+    path_to_frames = '/home/eshan/Thesis/Frames/' + baseName
     print(__doc__)
     '''
     Uncomment for extracting frames from video
     '''
-    #videoToFrames(video_src, path_to_frames)
+    videoToFrames(video_src, path_to_frames)
     '''
         Code for creating mask by background substraction and and motion heatmap
     '''
-    #maskGenerator.main(path_to_frames, path_to_backsub, path_to_heatmap)
+    maskGenerator.main(path_to_frames, path_to_backsub, path_to_heatmap)
     try:
         first_file = next(os.path.join(path_to_heatmap, f) for f in os.listdir(
             path_to_heatmap) if os.path.isfile(os.path.join(path_to_heatmap, f)))

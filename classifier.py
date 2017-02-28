@@ -147,40 +147,59 @@ def readData(dataList):
 def main():
 
     data0 = pd.read_csv('data.csv')
-    data1 = pd.read_csv('data1.csv', header=None)
-    frames = [data0, data1]
-    data = pd.concat(frames)
+    data1 = pd.read_csv('data1.csv')
+    #frames = [data0, data1]
+    #data = pd.concat(frames)
     # shuffle the data
     # print(list(data.columns))
     #print('Shuffling Data')
-    data = data.sample(frac=1).reset_index(drop=True)
+    data0 = data0.sample(frac=1).reset_index(drop=True)
+    data1 = data1.sample(frac=1).reset_index(drop=True)
 
     # Calculate length of 30% data for testing
-    val_text = len(data.index) * (30.0 / 100.0)
+    val_text = len(data0.index) * (30.0 / 100.0)
+    val1_text = len(data1.index) * (30.0 / 100.0)
 
     # divide training and test data
-    test_data = data.tail(int(val_text)).reset_index(drop=True)
-    training_data = data.head(len(data.index) - int(val_text))
+    test_data0 = data0.tail(int(val_text)).reset_index(drop=True)
+    training_data0 = data0.head(len(data0.index) - int(val_text))
+    test_data1 = data1.tail(int(val1_text)).reset_index(drop=True)
+    training_data1 = data1.head(len(data1.index) - int(val1_text))
     #test_data = data.tail(1).reset_index(drop=True)
     #training_data = data.head(1)
 
     # set labels
     # labels for svm
     # print(list(training_data.columns))
-    training_labels = training_data['labels'].values
-    test_labels = test_data['labels'].values
+    training_labels0 = training_data0['labels'].values
+    test_labels0 = test_data0['labels'].values
+    training_labels1 = training_data1['labels'].values
+    test_labels1 = test_data1['labels'].values
     # labels for tf classifiers
+
+    training_features_final0 = []
+    test_features_final0 = []
+    training_features_final1 = []
+    test_features_final1 = []
+
+    print("Reading Data")
+    training_features_final0 = readData(training_data0)
+    test_features_final0 = readData(test_data0)
+    training_features_final1 = readData(training_data1)
+    test_features_final1 = readData(test_data1)
+
+    training_features_final = np.concatenate(
+        (training_features_final0, training_features_final1), axis=0)
+    test_features_final = np.concatenate(
+        (test_features_final0, test_features_final1), axis=0)
+    training_labels = np.concatenate(
+        (training_labels0, training_labels1), axis=0)
+    test_labels = np.concatenate(
+        (test_labels0, test_labels1), axis=0)
     training_X = np.array(training_labels)
     test_X = np.array(test_labels)
     training_X = np.reshape(training_X, (len(training_X), 1))
     test_X = np.reshape(test_X, (len(test_X), 1))
-
-    training_features_final = []
-    test_features_final = []
-
-    print("Reading Data")
-    training_features_final = readData(training_data)
-    test_features_final = readData(test_data)
 
     print("Reshaping Data")
     train_cnn = reshapeData(training_features_final)
