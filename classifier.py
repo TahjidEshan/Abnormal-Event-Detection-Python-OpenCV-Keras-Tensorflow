@@ -94,10 +94,10 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
     np.random.seed(seed)
     num_classes = 2
     model = Sequential()
-    model.add(Convolution2D(32, 1, 1, init='glorot_uniform', border_mode='valid',
+    model.add(Convolution2D(64, 1, 1, init='glorot_uniform', border_mode='valid',
                             input_shape=(2, 2000, 1500), activation='relu'))
     model.add(MaxPooling2D(pool_size=(1, 1)))
-    model.add(Convolution2D(15, 1, 1, init='glorot_uniform', activation='relu'))
+    model.add(Convolution2D(32, 1, 1, init='glorot_uniform', activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     model.add(Flatten())
@@ -240,7 +240,7 @@ def main():
             bool = True
             #print("Initiating Logistics Regression")
             learning_rate = 0.1
-            training_epochs = 10
+            training_epochs = 28
 
             X = tf.placeholder(tf.float32, [None, n_dim])
             Y = tf.placeholder(tf.float32, [None, 1])

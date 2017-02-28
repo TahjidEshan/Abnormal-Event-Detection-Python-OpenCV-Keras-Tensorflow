@@ -7,7 +7,7 @@ def main():
     data = pd.read_csv('test.csv')
     N = 5
     ind = np.arange(N)  # the x locations for the groups
-    #fig=plt.figure()
+    # fig=plt.figure()
     width = 0.35       # the width of the bars
     values = [data.loc[0, data.columns[0]], data.loc[0, data.columns[1]], data.loc[
         0, data.columns[2]], data.loc[0, data.columns[3]], data.loc[0, data.columns[4]]]
@@ -21,6 +21,14 @@ def main():
     ax.set_xticklabels((data.columns[0], data.columns[1], data.columns[
                        2], data.columns[3], data.columns[4]))
 
+    def autolabel(rects):
+        for rect in rects:
+            height = rect.get_height()
+            ax.text(rect.get_x() + rect.get_width() / 2., 1.005 * height,
+                    '%f' % float(height),
+                    ha='center', va='bottom')
+
+    autolabel(rects1)
     fig.savefig('AccuracyTest.png')
     plt.show()
 
