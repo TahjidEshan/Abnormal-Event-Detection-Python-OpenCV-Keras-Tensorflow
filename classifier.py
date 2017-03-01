@@ -24,9 +24,9 @@ def svm(training_features, training_labels, test_features, test_labels):
         kernel='poly', degree=2, random_state=0))
     model.fit(training_features, training_labels)
     print "SVM Accuracy:", (model.score(test_features, test_labels))
-    filename = 'trained_SVM.sav'
-    print('Saving Model')
-    pickle.dump(model, open(filename, 'wb'))
+    #filename = 'trained_SVM.sav'
+    #print('Saving Model')
+    #pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -35,9 +35,9 @@ def naiveBayes(training_features, training_labels, test_features, test_labels):
     model = GaussianNB()
     model.fit(training_features, training_labels)
     print "Naive Bayes Accuracy:", (model.score(test_features, test_labels))
-    filename = 'trained_Naive_Bayes.sav'
-    print('Saving Model')
-    pickle.dump(model, open(filename, 'wb'))
+    #filename = 'trained_Naive_Bayes.sav'
+    #print('Saving Model')
+    #pickle.dump(model, open(filename, 'wb'))
     return None
 
 
@@ -60,11 +60,11 @@ def logReg(training_features, training_labels, test_features, test_labels, learn
         y_pred = sess.run(y_, feed_dict={X: test_features})
         correct_prediction = tf.equal(tf.argmax(y_, 1), tf.argmax(Y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        print "Logistics Regression Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
-        saver = tf.train.Saver()
-        print('Saving Model')
-        saver.save(sess, 'logistics_regression')
-        saver.export_meta_graph('logistics_regression.meta')
+        # print "Logistics Regression Accuracy: ", (sess.run(accuracy, feed_dict={X: test_features, Y: test_labels}))
+        #saver = tf.train.Saver()
+        #print('Saving Model')
+        #saver.save(sess, 'logistics_regression')
+        # saver.export_meta_graph('logistics_regression.meta')
     return None
 
 
@@ -82,8 +82,8 @@ def neuralNetKeras(training_data, training_labels, test_data, test_labels, n_dim
     scores = model.evaluate(test_data, test_labels)
     print("%s: %.2f%%" % (model.metrics_names[1], scores[1] * 100))
     #filename = 'trained_Neural_Net.sav'
-    print('Saving Model')
-    model.save('trained_neural_net.h5')
+    #print('Saving Model')
+    # model.save('trained_neural_net.h5')
     #pickle.dump(model, open(filename, 'wb'))
     return None
 
@@ -112,9 +112,9 @@ def cnnKeras(training_data, training_labels, test_data, test_labels, n_dim):
         test_data, test_labels), nb_epoch=30, batch_size=8, verbose=2)
 
     scores = model.evaluate(test_data, test_labels, verbose=1)
-    print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
-    print('Saving Model')
-    model.save('trained_CNN.h5')
+    #print("Baseline Error: %.2f%%" % (100 - scores[1] * 100))
+    #print('Saving Model')
+    # model.save('trained_CNN.h5')
     #filename = 'trained_CNN.sav'
     #pickle.dump(model, open(filename, 'wb'))
     return None
@@ -148,6 +148,8 @@ def main():
 
     data0 = pd.read_csv('data.csv')
     data1 = pd.read_csv('data1.csv')
+    data2 = pd.read_csv('data2.csv')
+    data3 = pd.read_csv('data3.csv')
     #frames = [data0, data1]
     #data = pd.concat(frames)
     # shuffle the data
@@ -155,16 +157,24 @@ def main():
     #print('Shuffling Data')
     data0 = data0.sample(frac=1).reset_index(drop=True)
     data1 = data1.sample(frac=1).reset_index(drop=True)
+    data2 = data2.sample(frac=1).reset_index(drop=True)
+    data3 = data3.sample(frac=1).reset_index(drop=True)
 
     # Calculate length of 30% data for testing
     val_text = len(data0.index) * (30.0 / 100.0)
     val1_text = len(data1.index) * (30.0 / 100.0)
+    val2_text = len(data2.index) * (30.0 / 100.0)
+    val3_text = len(data3.index) * (30.0 / 100.0)
 
     # divide training and test data
     test_data0 = data0.tail(int(val_text)).reset_index(drop=True)
     training_data0 = data0.head(len(data0.index) - int(val_text))
     test_data1 = data1.tail(int(val1_text)).reset_index(drop=True)
     training_data1 = data1.head(len(data1.index) - int(val1_text))
+    test_data2 = data2.tail(int(val2_text)).reset_index(drop=True)
+    training_data2 = data2.head(len(data2.index) - int(val2_text))
+    test_data3 = data3.tail(int(val3_text)).reset_index(drop=True)
+    training_data3 = data3.head(len(data3.index) - int(val3_text))
     #test_data = data.tail(1).reset_index(drop=True)
     #training_data = data.head(1)
 
@@ -175,27 +185,39 @@ def main():
     test_labels0 = test_data0['labels'].values
     training_labels1 = training_data1['labels'].values
     test_labels1 = test_data1['labels'].values
+    training_labels2 = training_data2['labels'].values
+    test_labels2 = test_data2['labels'].values
+    training_labels3 = training_data3['labels'].values
+    test_labels3 = test_data3['labels'].values
     # labels for tf classifiers
 
     training_features_final0 = []
     test_features_final0 = []
     training_features_final1 = []
     test_features_final1 = []
+    training_features_final2 = []
+    test_features_final2 = []
+    training_features_final3 = []
+    test_features_final3 = []
 
     print("Reading Data")
     training_features_final0 = readData(training_data0)
     test_features_final0 = readData(test_data0)
     training_features_final1 = readData(training_data1)
     test_features_final1 = readData(test_data1)
+    training_features_final2 = readData(training_data2)
+    test_features_final2 = readData(test_data2)
+    training_features_final3 = readData(training_data3)
+    test_features_final3 = readData(test_data3)
 
     training_features_final = np.concatenate(
-        (training_features_final0, training_features_final1), axis=0)
+        (training_features_final0, training_features_final1, training_features_final3, training_features_final3), axis=0)
     test_features_final = np.concatenate(
-        (test_features_final0, test_features_final1), axis=0)
+        (test_features_final0, test_features_final1, test_features_final2, test_features_final3), axis=0)
     training_labels = np.concatenate(
-        (training_labels0, training_labels1), axis=0)
+        (training_labels0, training_labels1, training_labels2, training_labels3), axis=0)
     test_labels = np.concatenate(
-        (test_labels0, test_labels1), axis=0)
+        (test_labels0, test_labels1, test_labels2, test_labels3), axis=0)
     training_X = np.array(training_labels)
     test_X = np.array(test_labels)
     training_X = np.reshape(training_X, (len(training_X), 1))

@@ -381,10 +381,10 @@ def main():
         featureList = pandas.DataFrame(features)
         featureList.columns = ['features', 'pixels', 'labels']
         #featureList=featureList[featureList['features'].map(len) > 0]
-        if not os.path.exists('data1.csv'):
-            featureList.to_csv('data1.csv', index=False)
+        if not os.path.exists('data2.csv'):
+            featureList.to_csv('data2.csv', index=False)
         else:
-            with open('data1.csv', 'a') as f:
+            with open('data2.csv', 'a') as f:
                 featureList.to_csv(f, header=False, index=False)
     except Exception as ex:
         template = "An exception of type {0} occured. Arguments:\n{1!r}"
